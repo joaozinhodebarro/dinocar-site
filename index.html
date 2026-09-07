@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google-site-verification" content="pr4FQMbILbq0Oco8eBI4-OFYX2EQx4f-55RYqgVMcQ8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DINOCAR - Centro Automotivo</title>
+    <link rel="stylesheet" href="oficina.css">
+    <style>
+        .home-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 90px);
+            padding: 30px 20px;
+            box-sizing: border-box;
+        }
+
+        /* Container da Logo com Enquadramento Perfeito */
+        .logo-hero-wrapper {
+            width: 100%;
+            max-width: 750px;
+            margin-bottom: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo-hero-img {
+            width: 100%;
+            height: auto;
+            max-height: 280px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px rgba(229, 9, 20, 0.2));
+        }
+
+        /* Container dos Botões Posicionados Abaixo da Logo */
+        .botoes-home-wrapper {
+            width: 100%;
+            max-width: 850px;
+        }
+
+        .botoes-home-wrapper .botoes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header e Menu Superior -->
+    <header class="header-bar">
+        <div class="logo-container">
+            <a href="./index.html" class="logo-link">
+                <img src="logo.jpg" alt="Logo Dino Car" class="logo-img">
+            </a>
+        </div>
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="./index.html">Início</a></li>
+                <li><a href="./quem-somos.html">Quem Somos</a></li>
+                <li><a href="./orcamento.html">Orçamento</a></li>
+                <li><a href="./contato.html">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="home-container">
+        <!-- Logo em Destaque no Topo -->
+        <div class="logo-hero-wrapper">
+            <img src="logo.jpg" alt="Dino Car Centro Automotivo" class="logo-hero-img">
+        </div>
+
+        <!-- Botões Interativos Abaixo da Logo -->
+        <div class="botoes-home-wrapper">
+            <div class="botoes-grid">
+                <a href="https://wa.me/5551999651832?text=Olá,%20gostaria%20de%20um%20orçamento%20para%20Pintura" target="_blank" class="btn-card">Setor Pintura</a>
+                <a href="https://wa.me/5551980550136?text=Olá,%20gostaria%20de%20um%20orçamento%20para%20Mecânica" target="_blank" class="btn-card">Setor Mecânica</a>
+                <a href="https://wa.me/5551992690802?text=Olá,%20gostaria%20de%20um%20orçamento%20para%20Elétrica" target="_blank" class="btn-card">Setor Elétrica</a>
+                <a href="./orcamento.html" class="btn-card" style="border-color: #e50914; background: #e50914; color: #fff;">Solicitar Orçamento</a>
+                <a href="https://www.facebook.com/share/1HtNVUjuP7/" target="_blank" rel="noopener noreferrer" class="btn-card">Facebook</a>
+                <a href="mailto:dinocar.sl@hotmail.com" class="btn-card">E-mail</a>
+                <a href="https://maps.app.goo.gl/tsMidHDu2WPFhqdS6?g_st=aw" target="_blank" rel="noopener noreferrer" class="btn-card">Mapa / Localização</a>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
