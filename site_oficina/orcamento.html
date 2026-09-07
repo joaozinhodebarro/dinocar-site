@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DINOCAR - Solicitar Orçamento</title>
+    <link rel="stylesheet" href="oficina.css">
+</head>
+<body>
+
+    <!-- Header e Menu Superior -->
+    <header class="header-bar">
+        <div class="logo-container">
+            <a href="./index.html" class="logo-link">
+                <img src="logo.jpg" alt="Logo Dino Car" class="logo-img">
+            </a>
+        </div>
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="./index.html">Início</a></li>
+                <li><a href="./quem-somos.html">Quem Somos</a></li>
+                <li><a href="./orcamento.html">Orçamento</a></li>
+                <li><a href="./contato.html">Contato</a></li>
+            </ul>
+        </nav>
+    </header> 
+
+    <main class="form-container">
+        <h2>Solicite seu Orçamento</h2>
+        <p>Escolha o setor responsável e descreva o serviço desejado para iniciar o atendimento.</p>
+
+        <form class="cadastro-form" id="formOrcamento">
+            <div class="form-group">
+                <label for="setor">Selecione o Setor Desejado</label>
+                <select id="setor" required style="width: 100%; padding: 12px; background: #1d1d24; border: 1px solid #33333f; color: #fff; border-radius: 6px; font-size: 1rem;">
+                    <option value="" disabled selected>Selecione uma opção...</option>
+                    <option value="pintura">Setor Pintura e Funilaria</option>
+                    <option value="mecanica">Setor Mecânica Geral</option>
+                    <option value="eletrica">Setor Elétrica Automotiva</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="nome">Seu Nome</label>
+                <input type="text" id="nome" placeholder="Digite seu nome" required>
+            </div>
+
+            <div class="form-group">
+                <label for="veiculo">Modelo e Ano do Carro</label>
+                <input type="text" id="veiculo" placeholder="Ex: Gol 1.6 - 2018" required>
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição do Serviço / Reparo</label>
+                <textarea id="descricao" rows="4" placeholder="Descreva o que precisa ser feito no veículo..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Enviar Orçamento via WhatsApp</button>
+        </form>
+
+        <!-- Botões Rápidos por Setor -->
+        <div class="botoes-grid" style="margin-top: 30px;">
+            <a href="https://wa.me/5551999651832?text=Olá,%20gostaria%20de%20um%20orçamento%20para%20Pintura" target="_blank" class="btn-card">Setor Pintura</a>
+            <a href="https://wa.me/5551980550136?text=Olá,%20gostaria%20de%20um%20orçamento%20para%20Mecânica" target="_blank" class="btn-card">Setor Mecânica</a>
+            <a href="https://wa.me/5551992690802?text=Olá,%20gostaria%20de%20um%20orçamento%20para%20Elétrica" target="_blank" class="btn-card">Setor Elétrica</a>
+        </div>
+    </main>
+
+    <script>
+    document.getElementById('formOrcamento').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const setorSelect = document.getElementById('setor');
+        const setorValor = setorSelect.value;
+        const setorNome = setorSelect.options[setorSelect.selectedIndex].text;
+        
+        const nome = document.getElementById('nome').value;
+        const veiculo = document.getElementById('veiculo').value;
+        const descricao = document.getElementById('descricao').value;
+
+        const telefones = {
+            pintura: '5551999651832',
+            mecanica: '5551980550136',
+            eletrica: '5551992690802'
+        };
+
+        const numeroDestino = telefones[setorValor] || '5551980550136';
+
+        let mensagem = `*SOLICITAÇÃO DE ORÇAMENTO - DINO CAR*%0A`;
+        mensagem += `*SETOR:* ${setorNome}%0A%0A`;
+        mensagem += `*Nome:* ${nome}%0A`;
+        mensagem += `*Veículo:* ${veiculo}%0A`;
+        mensagem += `*Descrição:* ${descricao}%0A`;
+
+        window.open(`https://wa.me/${numeroDestino}?text=${mensagem}`, '_blank');
+    });
+</script>
+</body>
+</html>

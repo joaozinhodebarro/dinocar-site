@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DINOCAR - Cadastro de Cliente</title>
+    <link rel="stylesheet" href="oficina.css">
+</head>
+<body class="page-cadastro">
+
+    <!-- Header e Menu Superior Unificados -->
+    <header class="header-bar">
+        <div class="logo-container">
+            <a href="./index.html" class="logo-link">
+                <img src="logo.jpg" alt="Logo Dino Car" class="logo-img">
+            </a>
+        </div>
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="./index.html">Início</a></li>
+                <li><a href="./quem-somos.html">Quem Somos</a></li>
+                <li><a href="./orcamento.html">Orçamento</a></li>
+                <li><a href="./cadastro.html">Cadastrar / Login</a></li>
+                <li><a href="./contato.html">Contato</a></li>
+            </ul>
+        </nav>
+    </header> 
+
+    <!-- Formulário de Cadastro -->
+    <main class="form-container">
+        <h2>Cadastro de Cliente</h2>
+        <p>Cadastre seu veículo e o serviço para a oficina.</p>
+
+        <form class="cadastro-form" id="formCadastro">
+            <div class="form-group">
+                <label for="nome">Nome Completo</label>
+                <input type="text" id="nome" placeholder="Digite seu nome" required>
+            </div>
+
+            <div class="form-group">
+                <label for="whatsapp">WhatsApp / Telefone</label>
+                <input type="tel" id="whatsapp" placeholder="(00) 00000-0000" required>
+            </div>
+
+            <div class="form-group">
+                <label for="modelo">Modelo e Placa do Carro</label>
+                <input type="text" id="modelo" placeholder="Ex: Civic 2.0 - ABC1D23" required>
+            </div>
+
+            <div class="form-group">
+                <label for="servico">Serviço Realizado / Solicitado</label>
+                <textarea id="servico" rows="3" placeholder="Ex: Troca de óleo, reparo no para-choque..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Cadastrar Cliente</button>
+        </form>
+
+        <!-- Botões de Contato -->
+        <div class="botoes-grid">
+            <a href="https://wa.me/5551998651832?text=Olá%20Marcos,%20gostaria%20de%20um%20orçamento%20de%20pintura" target="_blank" class="btn-card">Marcos Pintura</a>
+            <a href="https://wa.me/5551980550136?text=Olá%20Maurício,%20gostaria%20de%20agendar%20uma%20revisão%20mecânica" target="_blank" class="btn-card">Maurício Mecânico</a>
+            <a href="https://wa.me/5551992690802?text=Olá%20Nelson,%20preciso%20de%20um%20diagnóstico%20elétrico" target="_blank" class="btn-card">Nelson Elétrica</a>
+            <a href="./index.html" class="btn-card">Site</a>
+            <a href="https://www.facebook.com/share/1HtNVUjuP7/" target="_blank" rel="noopener noreferrer" class="btn-card">Facebook</a>
+            <a href="mailto:dinocar.sl@hotmail.com" class="btn-card">E-mail</a>
+            <a href="https://maps.app.goo.gl/tsMidHDu2WPFhqdS6?g_st=aw" target="_blank" rel="noopener noreferrer" class="btn-card">Mapa</a>
+        </div>
+    </main>
+
+    <!-- SCRIPT DE CONEXÃO COM A PLANILHA DO GOOGLE -->
+    <script>
+        const form = document.getElementById('formCadastro');
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyR7ndDIZybnh8LU5o-Al6hajduhm3QS3nUVJPsbFZeeu1hWS8iSrKEL8tsj-liX3GJ/exec';
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const btn = form.querySelector('.btn-submit');
+            btn.innerText = 'Salvando na planilha...';
+            btn.disabled = true;
+
+            const dados = {
+                nome: document.getElementById('nome').value,
+                telefone: document.getElementById('whatsapp').value,
+                veiculo: document.getElementById('modelo').value,
+                servico: document.getElementById('servico').value
+            };
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            })
+            .then(() => {
+                alert('Cliente e serviço salvos com sucesso na planilha!');
+                form.reset();
+                btn.innerText = 'Cadastrar Cliente';
+                btn.disabled = false;
+            })
+            .catch(error => {
+                alert('Erro ao enviar cadastro. Tente novamente.');
+                console.error(error);
+                btn.innerText = 'Cadastrar Cliente';
+                btn.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>
