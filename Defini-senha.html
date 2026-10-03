@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Redefinir Senha | Dino Car</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0d0d0d;
+      font-family: Arial, sans-serif;
+      color: white;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: #171717;
+      border: 1px solid #333;
+      border-radius: 14px;
+      padding: 32px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .subtitulo {
+      color: #aaa;
+      text-align: center;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 7px;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border-radius: 7px;
+      border: 1px solid #444;
+      background: #222;
+      color: white;
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: 1px solid #e00000;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 14px;
+      border: 0;
+      border-radius: 7px;
+      background: #d40000;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #mensagem {
+      margin-top: 18px;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .sucesso {
+      color: #5ee384;
+    }
+
+    .erro {
+      color: #ff6969;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+
+    <h1>Nova senha</h1>
+
+    <p class="subtitulo">
+      Digite e confirme sua nova senha para acessar o sistema Dino Car.
+    </p>
+
+    <form id="formSenha">
+
+      <label for="senha">Nova senha</label>
+      <input
+        type="password"
+        id="senha"
+        minlength="6"
+        required
+      >
+
+      <label for="confirmarSenha">Confirmar nova senha</label>
+      <input
+        type="password"
+        id="confirmarSenha"
+        minlength="6"
+        required
+      >
+
+      <button id="btnSalvar" type="submit">
+        Salvar nova senha
+      </button>
+
+    </form>
+
+    <div id="mensagem"></div>
+
+  </div>
+
+  <script>
+    const SUPABASE_URL =
+      "https://djtjwqefzfndqqwwdmbg.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_G3-5XtDXs97l0FsuaQqWBA_Fse37G_-";
+
+    const clienteSupabase =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+    const form = document.getElementById("formSenha");
+    const senha = document.getElementById("senha");
+    const confirmarSenha =
+      document.getElementById("confirmarSenha");
+
+    const mensagem =
+      document.getElementById("mensagem");
+
+    const btnSalvar =
+      document.getElementById("btnSalvar");
+
+    function mostrarMensagem(texto, tipo) {
+      mensagem.textContent = texto;
+      mensagem.className = tipo;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      mostrarMensagem("", "");
+
+      if (senha.value !== confirmarSenha.value) {
+        mostrarMensagem(
+          "As senhas não são iguais.",
+          "erro"
+        );
+        return;
+      }
+
+      if (senha.value.length < 6) {
+        mostrarMensagem(
+          "A senha precisa ter pelo menos 6 caracteres.",
+          "erro"
+        );
+        return;
+      }
+
+      btnSalvar.disabled = true;
+      btnSalvar.textContent = "Salvando...";
+
+      try {
+
+        const { error } =
+          await clienteSupabase.auth.updateUser({
+            password: senha.value
+          });
+
+        if (error) {
+          throw error;
+        }
+
+        mostrarMensagem(
+          "Senha alterada com sucesso! Você já pode entrar no sistema.",
+          "sucesso"
+        );
+
+        form.reset();
+
+      } catch (erro) {
+
+        console.error(erro);
+
+        mostrarMensagem(
+          "Não foi possível alterar a senha. O link pode ter expirado. Solicite uma nova recuperação de senha.",
+          "erro"
+        );
+
+      } finally {
+
+        btnSalvar.disabled = false;
+        btnSalvar.textContent = "Salvar nova senha";
+
+      }
+    });
+  </script>
+
+</body>
+</html>
