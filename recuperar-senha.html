@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Redefinir senha | DinoCar</title>
+  <style>
+    :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#101010;color:#fff;font-family:Arial,sans-serif;padding:24px}
+    main{width:100%;max-width:440px;background:#1b1b1b;border:1px solid #393939;border-radius:16px;padding:30px;box-shadow:0 15px 35px #0007}
+    h1{font-size:26px;margin:0 0 12px;color:#e50914}p{line-height:1.5;color:#d4d4d4}label{display:block;margin:18px 0 7px;font-weight:bold}input{width:100%;padding:13px;border-radius:8px;border:1px solid #777;background:#101010;color:#fff;font-size:16px}button{width:100%;padding:14px;background:#e50914;color:white;border:0;border-radius:8px;font-weight:bold;font-size:16px;margin-top:22px;cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}#status{margin-top:16px;min-height:22px}small{color:#aaa}
+  </style>
+</head>
+<body>
+<main>
+  <h1>DinoCar</h1>
+  <h2>Redefinir senha</h2>
+  <p id="intro">Verificando seu link de recuperação...</p>
+  <form id="form" hidden>
+    <label for="senha">Nova senha</label>
+    <input id="senha" type="password" minlength="8" maxlength="128" autocomplete="new-password" required>
+    <label for="confirmar">Confirmar nova senha</label>
+    <input id="confirmar" type="password" minlength="8" maxlength="128" autocomplete="new-password" required>
+    <small>Use pelo menos 8 caracteres e uma senha difícil de adivinhar.</small>
+    <button id="salvar" type="submit">Salvar nova senha</button>
+  </form>
+  <p id="status" role="status" aria-live="polite"></p>
+</main>
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+  // URL pública e chave ANON/PUBLISHABLE do mesmo projeto do aplicativo.
+  // A chave SERVICE_ROLE jamais deve ser usada nesta página.
+  const supabaseUrl = 'https://djtjwqefzfndqqwwdmbg.supabase.co';
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqdGp3cWVmemZuZHFxd3dkbWJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3Mzc0NzcsImV4cCI6MjEwNjMxMzQ3N30.5-3U9Pqf5TpJw6QGyHFzB9ytTFgIzgBy0lFDxetoh_c';
+  const intro = document.querySelector('#intro');
+  const form = document.querySelector('#form');
+  const status = document.querySelector('#status');
+  const salvar = document.querySelector('#salvar');
+
+  if (supabaseAnonKey.startsWith('SUBSTITUA_')) {
+    intro.textContent = 'Configuração pendente: informe a chave pública do Supabase.';
+  } else {
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: { detectSessionInUrl: true, persistSession: false, autoRefreshToken: false },
+    });
+    let recuperacaoAutorizada = false;
+    const parametros = new URLSearchParams(location.search);
+    const fragmento = new URLSearchParams(location.hash.substring(1));
+    const veioDeRecuperacao = parametros.get('type') === 'recovery' || fragmento.get('type') === 'recovery';
+    const temCodigo = parametros.has('code');
+    const tokenHash = parametros.get('token_hash');
+
+    const habilitar = () => {
+      recuperacaoAutorizada = true;
+      intro.textContent = 'Digite sua nova senha abaixo.';
+      form.hidden = false;
+      status.textContent = '';
+      // Limpa tokens da barra de endereço após serem processados.
+      history.replaceState({}, '', location.pathname);
+    };
+
+    (async () => {
+      try {
+        if (tokenHash && parametros.get('type') === 'recovery') {
+          const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' });
+          if (error) throw error;
+          habilitar();
+        } else if (temCodigo) {
+          const { error } = await supabase.auth.exchangeCodeForSession(parametros.get('code'));
+          if (error) throw error;
+          habilitar();
+        } else if (veioDeRecuperacao && fragmento.get('access_token') && fragmento.get('refresh_token')) {
+          const { error } = await supabase.auth.setSession({
+            access_token: fragmento.get('access_token'),
+            refresh_token: fragmento.get('refresh_token'),
+          });
+          if (error) throw error;
+          habilitar();
+        } else {
+          intro.textContent = 'Link inválido ou incompleto. Solicite um novo e-mail de recuperação.';
+        }
+      } catch (_) {
+        intro.textContent = 'Não foi possível validar o link. Solicite um novo e-mail de recuperação.';
+      }
+    })();
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!recuperacaoAutorizada) return;
+      const senha = document.querySelector('#senha').value;
+      const confirmar = document.querySelector('#confirmar').value;
+      if (senha !== confirmar) { status.textContent = 'As senhas não coincidem.'; return; }
+      salvar.disabled = true;
+      status.textContent = 'Atualizando senha...';
+      const { error } = await supabase.auth.updateUser({ password: senha });
+      if (error) {
+        status.textContent = 'Não foi possível atualizar a senha. Solicite outro link e tente novamente.';
+        salvar.disabled = false;
+        return;
+      }
+      status.textContent = 'Senha atualizada com sucesso! Agora entre no aplicativo DinoCar com a nova senha.';
+      form.hidden = true;
+      intro.textContent = 'Recuperação concluída.';
+      await supabase.auth.signOut({ scope: 'local' });
+    });
+  }
+</script>
+</body>
+</html>
